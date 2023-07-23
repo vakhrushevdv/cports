@@ -1,14 +1,14 @@
-commit a671444c922dbb829831021f9129a1c5d44ad170
-Author: Daniel Kolesa <daniel@octaforge.org>
-Date:   Tue May 16 01:55:33 2023 +0200
+commit 0f8fdaffeb6bba60e3abb4d1602c171502d32348
+Author: q66 <q66@chimera-linux.org>
+Date:   Sun Jul 23 22:41:07 2023 +0200
 
     migrate regexp for qt6
 
 diff --git a/apps/launcher/graphicspage.cpp b/apps/launcher/graphicspage.cpp
-index ebb031e..c5df958 100644
+index 5cdfb57..c5bdc80 100644
 --- a/apps/launcher/graphicspage.cpp
 +++ b/apps/launcher/graphicspage.cpp
-@@ -200,10 +200,11 @@ void Launcher::GraphicsPage::saveSettings()
+@@ -198,10 +198,11 @@ void Launcher::GraphicsPage::saveSettings()
      int cWidth = 0;
      int cHeight = 0;
      if (standardRadioButton->isChecked()) {
@@ -25,7 +25,7 @@ index ebb031e..c5df958 100644
      } else {
          cWidth = customWidthSpinBox->value();
 diff --git a/apps/launcher/utils/textinputdialog.cpp b/apps/launcher/utils/textinputdialog.cpp
-index 70b8275..c022bba 100644
+index 5bbcf4c..3ef9cce 100644
 --- a/apps/launcher/utils/textinputdialog.cpp
 +++ b/apps/launcher/utils/textinputdialog.cpp
 @@ -20,7 +20,8 @@ Launcher::TextInputDialog::TextInputDialog(const QString& title, const QString &
@@ -39,7 +39,7 @@ index 70b8275..c022bba 100644
      mLineEdit->setValidator(validator);
      mLineEdit->setCompleter(nullptr);
 diff --git a/apps/wizard/inisettings.cpp b/apps/wizard/inisettings.cpp
-index e9cec12..f423f07 100644
+index 198d1df..d3be2be 100644
 --- a/apps/wizard/inisettings.cpp
 +++ b/apps/wizard/inisettings.cpp
 @@ -4,7 +4,7 @@
@@ -127,7 +127,7 @@ index e9cec12..f423f07 100644
  
              // Append the section, but only if there is one
 diff --git a/components/config/gamesettings.cpp b/components/config/gamesettings.cpp
-index 8717a68..6276e27 100644
+index b59c343..1c927d9 100644
 --- a/components/config/gamesettings.cpp
 +++ b/components/config/gamesettings.cpp
 @@ -3,7 +3,7 @@
@@ -139,8 +139,8 @@ index 8717a68..6276e27 100644
  
  #include <components/files/configurationmanager.hpp>
  
-@@ -83,7 +83,7 @@ bool Config::GameSettings::readUserFile(QTextStream &stream)
- bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QString> &settings)
+@@ -93,7 +93,7 @@ bool Config::GameSettings::readUserFile(QTextStream &stream, bool ignoreContent)
+ bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QString> &settings, bool ignoreContent)
  {
      QMultiMap<QString, QString> cache;
 -    QRegExp keyRe("^([^=]+)\\s*=\\s*(.+)$");
@@ -148,7 +148,7 @@ index 8717a68..6276e27 100644
  
      while (!stream.atEnd()) {
          QString line = stream.readLine();
-@@ -91,10 +91,11 @@ bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QStr
+@@ -101,10 +101,11 @@ bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QStr
          if (line.isEmpty() || line.startsWith("#"))
              continue;
  
@@ -163,7 +163,7 @@ index 8717a68..6276e27 100644
  
              // Don't remove composing entries
              if (key != QLatin1String("data")
-@@ -196,13 +197,13 @@ bool Config::GameSettings::writeFile(QTextStream &stream)
+@@ -208,13 +209,13 @@ bool Config::GameSettings::writeFile(QTextStream &stream)
  
  bool Config::GameSettings::isOrderedLine(const QString& line)
  {
@@ -184,7 +184,7 @@ index 8717a68..6276e27 100644
  }
  
  // Policy:
-@@ -261,7 +262,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -273,7 +274,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
      //        +----------------------------------------------------------+
      //
      //
@@ -193,7 +193,7 @@ index 8717a68..6276e27 100644
      std::vector<QString> comments;
      auto commentStart = fileCopy.end();
      std::map<QString, std::vector<QString> > commentsMap;
-@@ -272,9 +273,10 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -284,9 +285,10 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
              // save in a separate map of comments keyed by "ordered" line
              if (!comments.empty())
              {
@@ -206,7 +206,7 @@ index 8717a68..6276e27 100644
                      comments.clear();
                      commentStart = fileCopy.end();
                  }
-@@ -283,14 +285,14 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -295,14 +297,14 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
  
              *iter = QString(); // "ordered" lines to be removed later
          }
@@ -223,7 +223,7 @@ index 8717a68..6276e27 100644
              {
                  if (!comments.empty())
                  {
-@@ -306,11 +308,11 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -318,11 +320,11 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
          }
          else
          {
@@ -238,7 +238,7 @@ index 8717a68..6276e27 100644
              {
                  if (commentStart == fileCopy.end())
                      throw std::runtime_error("Config::GameSettings: failed to parse settings - iterator is past of end of settings file");
-@@ -327,10 +329,10 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -339,10 +341,10 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
              // keep blank lines and non-"ordered" lines other than comments
  
              // look for a key in the line
@@ -251,7 +251,7 @@ index 8717a68..6276e27 100644
                  *iter = QString();
                  comments.clear();
                  commentStart = fileCopy.end();
-@@ -339,15 +341,16 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -351,15 +353,16 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
  
              // look for a matching key in user settings
              *iter = QString(); // assume no match
@@ -272,7 +272,7 @@ index 8717a68..6276e27 100644
                      {
                          *iter = settingLine;
                          break;
-@@ -366,7 +369,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -378,7 +381,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
  
          // Below is based on readFile() code, if that changes corresponding change may be
          // required (for example duplicates may be inserted if the rules don't match)
@@ -281,7 +281,7 @@ index 8717a68..6276e27 100644
          {
              stream << iter << "\n";
              continue;
-@@ -406,13 +409,14 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -418,13 +421,14 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
          else
              settingLine = it.key() + "=" + it.value();
  
@@ -299,7 +299,7 @@ index 8717a68..6276e27 100644
  
              if (i != commentsMap.end())
              {
-@@ -433,7 +437,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -445,7 +449,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
          auto i = commentsMap.begin();
          for (; i != commentsMap.end(); ++i)
          {
@@ -309,7 +309,7 @@ index 8717a68..6276e27 100644
                  std::vector<QString> cLines = i->second;
                  for (const auto & cLine : cLines)
 diff --git a/components/config/launchersettings.cpp b/components/config/launchersettings.cpp
-index 025bc43..3314adf 100644
+index 11ced3c..4594d16 100644
 --- a/components/config/launchersettings.cpp
 +++ b/components/config/launchersettings.cpp
 @@ -1,12 +1,11 @@
@@ -324,10 +324,10 @@ index 025bc43..3314adf 100644
  
 -#include <QDebug>
 -
+ #include <components/files/configurationmanager.hpp>
+ 
  const char Config::LauncherSettings::sCurrentContentListKey[] = "Profiles/currentprofile";
- const char Config::LauncherSettings::sLauncherConfigFileName[] = "launcher.cfg";
- const char Config::LauncherSettings::sContentListsSectionPrefix[] = "Profiles/";
-@@ -17,16 +16,16 @@ QStringList Config::LauncherSettings::subKeys(const QString &key)
+@@ -21,16 +20,16 @@ QStringList Config::LauncherSettings::subKeys(const QString &key)
      QMultiMap<QString, QString> settings = SettingsBase::getSettings();
      QStringList keys = settings.uniqueKeys();
  
@@ -348,7 +348,7 @@ index 025bc43..3314adf 100644
  
              if(prefixedKey.startsWith(key))
              {
-@@ -45,7 +44,7 @@ QStringList Config::LauncherSettings::subKeys(const QString &key)
+@@ -49,7 +48,7 @@ QStringList Config::LauncherSettings::subKeys(const QString &key)
  bool Config::LauncherSettings::writeFile(QTextStream &stream)
  {
      QString sectionPrefix;
@@ -357,7 +357,7 @@ index 025bc43..3314adf 100644
      QMultiMap<QString, QString> settings = SettingsBase::getSettings();
  
      QMapIterator<QString, QString> i(settings);
-@@ -57,9 +56,10 @@ bool Config::LauncherSettings::writeFile(QTextStream &stream)
+@@ -61,9 +60,10 @@ bool Config::LauncherSettings::writeFile(QTextStream &stream)
          QString prefix;
          QString key;
  
@@ -372,7 +372,7 @@ index 025bc43..3314adf 100644
  
          // Get rid of legacy settings
 diff --git a/components/config/settingsbase.hpp b/components/config/settingsbase.hpp
-index 86fa962..1c36b31 100644
+index 595fb9d..3b2b5f4 100644
 --- a/components/config/settingsbase.hpp
 +++ b/components/config/settingsbase.hpp
 @@ -4,7 +4,7 @@
@@ -381,10 +381,10 @@ index 86fa962..1c36b31 100644
  #include <QString>
 -#include <QRegExp>
 +#include <QRegularExpression>
- #include <QMultiMap>
  
  namespace Config
-@@ -54,8 +54,8 @@ namespace Config
+ {
+@@ -51,8 +51,8 @@ namespace Config
  
              QString sectionPrefix;
  
@@ -395,7 +395,7 @@ index 86fa962..1c36b31 100644
  
              while (!stream.atEnd()) {
                  QString line = stream.readLine();
-@@ -63,16 +63,18 @@ namespace Config
+@@ -60,16 +60,18 @@ namespace Config
                  if (line.isEmpty() || line.startsWith("#"))
                      continue;
  
@@ -420,22 +420,22 @@ index 86fa962..1c36b31 100644
                      if (!sectionPrefix.isEmpty())
                          key.prepend(sectionPrefix);
 diff --git a/components/contentselector/model/esmfile.cpp b/components/contentselector/model/esmfile.cpp
-index 46a7c96..3991412 100644
+index 60ca199..76b69c2 100644
 --- a/components/contentselector/model/esmfile.cpp
 +++ b/components/contentselector/model/esmfile.cpp
-@@ -2,6 +2,7 @@
+@@ -1,6 +1,7 @@
+ #include "esmfile.hpp"
  
- #include <QMimeData>
  #include <QDataStream>
 +#include <QIODevice>
  
  int ContentSelectorModel::EsmFile::sPropertyCount = 7;
  QString ContentSelectorModel::EsmFile::sToolTip = QString("<b>Author:</b> %1<br/> \
 diff --git a/components/contentselector/view/combobox.cpp b/components/contentselector/view/combobox.cpp
-index 742e236..01bd547 100644
+index 3108062..269936b 100644
 --- a/components/contentselector/view/combobox.cpp
 +++ b/components/contentselector/view/combobox.cpp
-@@ -6,7 +6,8 @@
+@@ -8,7 +8,8 @@
  ContentSelectorView::ComboBox::ComboBox(QWidget *parent) :
      QComboBox(parent)
  {
@@ -446,11 +446,11 @@ index 742e236..01bd547 100644
      setEditable(true);
      setCompleter(nullptr);
 diff --git a/components/contentselector/view/combobox.hpp b/components/contentselector/view/combobox.hpp
-index 9af3c83..c25f5be 100644
+index ebca824..53ca840 100644
 --- a/components/contentselector/view/combobox.hpp
 +++ b/components/contentselector/view/combobox.hpp
-@@ -5,7 +5,7 @@
- #include <QStylePainter>
+@@ -4,7 +4,7 @@
+ #include <QComboBox>
  
  class QString;
 -class QRegExpValidator;
@@ -458,7 +458,7 @@ index 9af3c83..c25f5be 100644
  
  namespace ContentSelectorView
  {
-@@ -23,7 +23,7 @@ namespace ContentSelectorView
+@@ -22,7 +22,7 @@ namespace ContentSelectorView
  
      protected:
          void paintEvent(QPaintEvent *) override;
@@ -468,10 +468,10 @@ index 9af3c83..c25f5be 100644
  }
  
 diff --git a/components/contentselector/view/contentselector.cpp b/components/contentselector/view/contentselector.cpp
-index 6bb8e6e..9e0b485 100644
+index 0a12b01..c221bb1 100644
 --- a/components/contentselector/view/contentselector.cpp
 +++ b/components/contentselector/view/contentselector.cpp
-@@ -63,7 +63,7 @@ void ContentSelectorView::ContentSelector::buildAddonView()
+@@ -58,7 +58,7 @@ void ContentSelectorView::ContentSelector::buildAddonView()
      ui.addonView->setVisible (true);
  
      mAddonProxyModel = new AddOnProxyModel(this);

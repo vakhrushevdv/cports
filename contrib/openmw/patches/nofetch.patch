@@ -1,28 +1,37 @@
-commit 1d6f48d2f16c6fb588a2800a85cfd42de7347c0b
-Author: Daniel Kolesa <daniel@octaforge.org>
-Date:   Tue May 16 01:41:08 2023 +0200
+commit 151df91c8ab0b3df1da497b3e40f330fee270154
+Author: q66 <q66@chimera-linux.org>
+Date:   Sun Jul 23 22:31:10 2023 +0200
 
     use local paths for cmake fetch
 
 diff --git a/extern/CMakeLists.txt b/extern/CMakeLists.txt
-index 5dc9642..abf9d6f 100644
+index 0d3b5a7..bbf75ac 100644
 --- a/extern/CMakeLists.txt
 +++ b/extern/CMakeLists.txt
-@@ -47,7 +47,7 @@ if(NOT OPENMW_USE_SYSTEM_BULLET)
+@@ -49,7 +49,7 @@ if(NOT OPENMW_USE_SYSTEM_BULLET)
      # May 7, 2021
      include(FetchContent)
      FetchContent_Declare(bullet
 -        URL https://github.com/bulletphysics/bullet3/archive/refs/tags/3.17.tar.gz
-+        URL file:///builddir/openmw-0.47.0/3.17.tar.gz
-         URL_HASH MD5=7711bce9a49c289a08ecda34eaa0f32e
++        URL file:///builddir/openmw-0.48.0/3.17.tar.gz
+         URL_HASH SHA512=a5105bf5f1dd365a64a350755c7d2c97942f74897a18dcdb3651e6732fd55cc1030a096f5808cf50575281f05e3ac09aa50a48d271a47b94cd61f5167a72b7cc
          SOURCE_DIR fetched/bullet
      )
-@@ -180,7 +180,7 @@ if(NOT OPENMW_USE_SYSTEM_RECASTNAVIGATION)
+@@ -182,7 +182,7 @@ if(NOT OPENMW_USE_SYSTEM_RECASTNAVIGATION)
      # master on 15 Feb 2021
      include(FetchContent)
      FetchContent_Declare(recastnavigation
 -        URL https://github.com/recastnavigation/recastnavigation/archive/e75adf86f91eb3082220085e42dda62679f9a3ea.zip
-+        URL file:///builddir/openmw-0.47.0/e75adf86f91eb3082220085e42dda62679f9a3ea.zip
-         URL_HASH MD5=af905d121ef9d1cdfa979b0495cba059
++        URL file:///builddir/openmw-0.48.0/e75adf86f91eb3082220085e42dda62679f9a3ea.zip
+         URL_HASH SHA512=93a19490cdfa55e98a6af9cc050e94af88fdb95fae2059ceeff28b62f3b48515f5fdd2c806c910550933b6861a4f6a91173ee0ed1b61c1396f7b34d4c78f0793
          SOURCE_DIR fetched/recastnavigation
+     )
+@@ -236,7 +236,7 @@ if (NOT OPENMW_USE_SYSTEM_YAML_CPP)
+ 
+     include(FetchContent)
+     FetchContent_Declare(yaml-cpp
+-        URL https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.7.0.zip
++        URL file:///builddir/openmw-0.48.0/yaml-cpp-0.7.0.zip
+         URL_HASH MD5=1e8ca0d6ccf99f3ed9506c1f6937d0ec
+         SOURCE_DIR fetched/yaml-cpp
      )

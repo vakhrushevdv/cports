@@ -1,37 +1,14 @@
-commit 709cf0df2a214a60fdb59116cde8acf64c1010e2
-Author: Daniel Kolesa <daniel@octaforge.org>
-Date:   Tue May 16 02:04:46 2023 +0200
+commit 73577f5edc1a2990bfd5acf61c2670d85a8fa815
+Author: q66 <q66@chimera-linux.org>
+Date:   Sun Jul 23 22:53:11 2023 +0200
 
     more qt6 fixups
 
-diff --git a/apps/launcher/graphicspage.cpp b/apps/launcher/graphicspage.cpp
-index c5df958..b143af3 100644
---- a/apps/launcher/graphicspage.cpp
-+++ b/apps/launcher/graphicspage.cpp
-@@ -1,6 +1,5 @@
- #include "graphicspage.hpp"
- 
--#include <QDesktopWidget>
- #include <QMessageBox>
- #include <QDir>
- #include <QScreen>
-diff --git a/apps/launcher/main.cpp b/apps/launcher/main.cpp
-index 9c9acb4..0cb612a 100644
---- a/apps/launcher/main.cpp
-+++ b/apps/launcher/main.cpp
-@@ -1,7 +1,6 @@
- #include <iostream>
- 
- #include <QTranslator>
--#include <QTextCodec>
- #include <QDir>
- 
- #ifdef MAC_OS_X_VERSION_MIN_REQUIRED
 diff --git a/apps/launcher/maindialog.hpp b/apps/launcher/maindialog.hpp
-index 80e014e..f37bc9e 100644
+index ca198ce..8bf8343 100644
 --- a/apps/launcher/maindialog.hpp
 +++ b/apps/launcher/maindialog.hpp
-@@ -17,7 +17,6 @@
+@@ -15,7 +15,6 @@
  
  class QListWidgetItem;
  class QStackedWidget;
@@ -39,17 +16,8 @@ index 80e014e..f37bc9e 100644
  class QStringListModel;
  class QString;
  
-diff --git a/apps/launcher/utils/profilescombobox.cpp b/apps/launcher/utils/profilescombobox.cpp
-index af349dd..f4108a7 100644
---- a/apps/launcher/utils/profilescombobox.cpp
-+++ b/apps/launcher/utils/profilescombobox.cpp
-@@ -1,4 +1,3 @@
--#include <QRegExpValidator>
- #include <QString>
- #include <QApplication>
- #include <QKeyEvent>
 diff --git a/apps/wizard/inisettings.cpp b/apps/wizard/inisettings.cpp
-index ed0488e..d159064 100644
+index 1e51d78..6226cb6 100644
 --- a/apps/wizard/inisettings.cpp
 +++ b/apps/wizard/inisettings.cpp
 @@ -1,12 +1,13 @@
@@ -182,18 +150,17 @@ index d425a9b..c4e914c 100644
          bool parseInx(const QString &path);
  
 diff --git a/apps/wizard/installationpage.cpp b/apps/wizard/installationpage.cpp
-index 9c90b0b..5ce5eb3 100644
+index 0df0dbb..87146be 100644
 --- a/apps/wizard/installationpage.cpp
 +++ b/apps/wizard/installationpage.cpp
-@@ -1,7 +1,6 @@
+@@ -1,6 +1,5 @@
  #include "installationpage.hpp"
  
- #include <QDebug>
 -#include <QTextCodec>
- #include <QFileInfo>
  #include <QFileDialog>
  #include <QMessageBox>
-@@ -129,11 +128,11 @@ void Wizard::InstallationPage::startInstallation()
+ #include <QThread>
+@@ -130,11 +129,11 @@ void Wizard::InstallationPage::startInstallation()
      QString language(field(QLatin1String("installation.language")).toString());
  
      if (language == QLatin1String("Polish")) {
@@ -209,25 +176,24 @@ index 9c90b0b..5ce5eb3 100644
  
      mThread->start();
 diff --git a/apps/wizard/unshield/unshieldworker.cpp b/apps/wizard/unshield/unshieldworker.cpp
-index f84658b..71da0d6 100644
+index 8ff0690..150341e 100644
 --- a/apps/wizard/unshield/unshieldworker.cpp
 +++ b/apps/wizard/unshield/unshieldworker.cpp
-@@ -7,12 +7,12 @@
- #include <QFileDialog>
+@@ -4,11 +4,11 @@
+ #include <QReadLocker>
  #include <QFileInfo>
  #include <QStringList>
 -#include <QTextStream>
 -#include <QTextCodec>
  #include <QFile>
  #include <QDir>
- #include <QDirIterator>
  
 +#include <fstream>
 +
- Wizard::UnshieldWorker::UnshieldWorker(QObject *parent) :
+ Wizard::UnshieldWorker::UnshieldWorker(qint64 expectedMorrowindBsaSize, QObject *parent) :
      QObject(parent),
-     mIniSettings()
-@@ -24,7 +24,7 @@ Wizard::UnshieldWorker::UnshieldWorker(QObject *parent) :
+     mExpectedMorrowindBsaSize(expectedMorrowindBsaSize),
+@@ -21,7 +21,7 @@ Wizard::UnshieldWorker::UnshieldWorker(qint64 expectedMorrowindBsaSize, QObject
      mDiskPath = QString();
  
      // Default to Latin encoding
@@ -236,7 +202,7 @@ index f84658b..71da0d6 100644
  
      mInstallMorrowind = false;
      mInstallTribunal = false;
-@@ -154,10 +154,10 @@ QString Wizard::UnshieldWorker::getDiskPath()
+@@ -151,10 +151,10 @@ QString Wizard::UnshieldWorker::getDiskPath()
  }
  
  
@@ -248,8 +214,8 @@ index f84658b..71da0d6 100644
 +    mIniEncoding = encoding;
  }
  
- bool Wizard::UnshieldWorker::setupSettings()
-@@ -166,18 +166,15 @@ bool Wizard::UnshieldWorker::setupSettings()
+ void Wizard::UnshieldWorker::wakeAll()
+@@ -168,18 +168,15 @@ bool Wizard::UnshieldWorker::setupSettings()
      if (getIniPath().isEmpty())
          return false;
  
@@ -273,7 +239,7 @@ index f84658b..71da0d6 100644
  
      return true;
  }
-@@ -187,20 +184,17 @@ bool Wizard::UnshieldWorker::writeSettings()
+@@ -189,20 +186,17 @@ bool Wizard::UnshieldWorker::writeSettings()
      if (getIniPath().isEmpty())
          return false;
  
@@ -301,10 +267,10 @@ index f84658b..71da0d6 100644
      }
  
 diff --git a/apps/wizard/unshield/unshieldworker.hpp b/apps/wizard/unshield/unshieldworker.hpp
-index 2553d1b..9afe6cc 100644
+index 6e37e73..dcee05a 100644
 --- a/apps/wizard/unshield/unshieldworker.hpp
 +++ b/apps/wizard/unshield/unshieldworker.hpp
-@@ -41,7 +41,7 @@ namespace Wizard
+@@ -42,7 +42,7 @@ namespace Wizard
          QString getPath();
          QString getIniPath();
  
@@ -313,7 +279,7 @@ index 2553d1b..9afe6cc 100644
  
          bool setupSettings();
  
-@@ -101,7 +101,7 @@ namespace Wizard
+@@ -105,7 +105,7 @@ namespace Wizard
  
          IniSettings mIniSettings;
  
@@ -323,10 +289,10 @@ index 2553d1b..9afe6cc 100644
          QWaitCondition mWait;
  
 diff --git a/components/config/gamesettings.cpp b/components/config/gamesettings.cpp
-index ff9046f..d927b08 100644
+index 183a658..49ac023 100644
 --- a/components/config/gamesettings.cpp
 +++ b/components/config/gamesettings.cpp
-@@ -156,27 +156,22 @@ bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QStr
+@@ -168,21 +168,16 @@ bool Config::GameSettings::readFile(QTextStream &stream, QMultiMap<QString, QStr
  bool Config::GameSettings::writeFile(QTextStream &stream)
  {
      // Iterate in reverse order to preserve insertion order
@@ -354,14 +320,7 @@ index ff9046f..d927b08 100644
              QChar delim = '\"';
              QChar escape = '&';
              QString string = i.value();
- 
-             stream << delim;
--            for (auto it : string)
-+            for (auto& it : string)
-             {
-                 if (it == delim || it == escape)
-                     stream << escape;
-@@ -189,7 +184,6 @@ bool Config::GameSettings::writeFile(QTextStream &stream)
+@@ -201,7 +196,6 @@ bool Config::GameSettings::writeFile(QTextStream &stream)
          }
  
          stream << i.key() << "=" << i.value() << "\n";
@@ -369,7 +328,7 @@ index ff9046f..d927b08 100644
      }
  
      return true;
-@@ -378,27 +372,24 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -390,21 +384,18 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
  
      // Iterate in reverse order to preserve insertion order
      QString settingLine;
@@ -398,14 +357,7 @@ index ff9046f..d927b08 100644
              QChar delim = '\"';
              QChar escape = '&';
              QString string = it.value();
- 
-             settingLine += delim;
--            for (auto iter : string)
-+            for (auto& iter : string)
-             {
-                 if (iter == delim || iter == escape)
-                     settingLine += escape;
-@@ -421,7 +412,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
+@@ -433,7 +424,7 @@ bool Config::GameSettings::writeFileWithComments(QFile &file)
              if (i != commentsMap.end())
              {
                  std::vector<QString> cLines = i->second;
@@ -415,10 +367,10 @@ index ff9046f..d927b08 100644
  
                  commentsMap.erase(i);
 diff --git a/components/config/launchersettings.cpp b/components/config/launchersettings.cpp
-index 3314adf..44f31fa 100644
+index 4594d16..13318c3 100644
 --- a/components/config/launchersettings.cpp
 +++ b/components/config/launchersettings.cpp
-@@ -47,11 +47,10 @@ bool Config::LauncherSettings::writeFile(QTextStream &stream)
+@@ -51,11 +51,10 @@ bool Config::LauncherSettings::writeFile(QTextStream &stream)
      QRegularExpression sectionRe(QRegularExpression::anchoredPattern("([^/]+)/(.+)$"));
      QMultiMap<QString, QString> settings = SettingsBase::getSettings();
  
@@ -435,18 +387,10 @@ index 3314adf..44f31fa 100644
          QString prefix;
          QString key;
 diff --git a/components/contentselector/model/contentmodel.cpp b/components/contentselector/model/contentmodel.cpp
-index e51c180..bc11e99 100644
+index 8f69f6b..57f03b0 100644
 --- a/components/contentselector/model/contentmodel.cpp
 +++ b/components/contentselector/model/contentmodel.cpp
-@@ -4,7 +4,6 @@
- #include <stdexcept>
- 
- #include <QDir>
--#include <QTextCodec>
- #include <QDebug>
- 
- #include <components/esm/esmreader.hpp>
-@@ -179,12 +178,12 @@ QVariant ContentSelectorModel::ContentModel::data(const QModelIndex &index, int
+@@ -192,12 +192,12 @@ QVariant ContentSelectorModel::ContentModel::data(const QModelIndex &index, int
          {
          case 0:
          case 1:
