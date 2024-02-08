@@ -2,17 +2,6 @@ name: Lint tree and check format
 
 on:
   push:
-    branches:
-      - master
-    paths:
-      - 'main/**'
-      - 'contrib/**'
-      - 'user/**'
-      - 'src/**'
-
-  pull_request:
-    branches:
-      - master
     paths:
       - 'main/**'
       - 'contrib/**'
