@@ -1,9 +1,7 @@
 name: Build packages
 
 on:
-  pull_request:
-    branches:
-      - master
+  push:
     paths:
       - 'main/**'
       - 'contrib/**'
@@ -12,7 +10,7 @@ on:
 jobs:
   build:
     name: Build packages
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     if: "!contains(github.event.pull_request.title, '[ci skip]') && !contains(github.event.pull_request.body, '[ci skip]')"
 
     steps:
