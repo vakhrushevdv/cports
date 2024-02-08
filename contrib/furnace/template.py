@@ -1,10 +1,11 @@
 pkgname = "furnace"
-pkgver = "0.6"
-pkgrel = 0
+pkgver = "0.6.1"
+pkgrel = 1
 build_style = "cmake"
 configure_args = [
     "-DSYSTEM_FFTW=ON",
     "-DSYSTEM_FMT=ON",
+    "-DSYSTEM_FREETYPE=ON",
     "-DSYSTEM_LIBSNDFILE=ON",
     "-DSYSTEM_PORTAUDIO=ON",
     "-DSYSTEM_RTMIDI=ON",
@@ -16,6 +17,7 @@ makedepends = [
     "alsa-lib-devel",
     "fftw-devel",
     "fmt-devel",
+    "freetype-devel",
     "libsndfile-devel",
     "pipewire-jack-devel",
     "portaudio-devel",
@@ -35,6 +37,6 @@ source = [
 ]
 source_paths = [".", "extern/adpcm"]
 sha256 = [
-    "d7d40da0234f379a689e8d5ad925e097e0ef487a72fe8d5c1b050cdc18f7fb44",
+    "4af60c47c3070a176e9edf03663a6319d219083b25f9b43234bd0acfdf62a6b0",
     "5e64cbd5414e7e64088c295446d90550cf5c2f80c12cb17737a16a31bbef7f1a",
 ]
